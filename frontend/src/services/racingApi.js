@@ -3,6 +3,37 @@
  */
 
 const API_BASE_URL = '/api';
+const USE_MOCK = true; // 백엔드 없이 테스트할 때 true, 실제 API 사용시 false
+
+/**
+ * Mock 데이터 생성 (테스트용)
+ */
+const generateMockRaceData = (carNames, roundCount) => {
+  const raceHistory = [];
+  const positions = {};
+  
+  // 초기 위치 설정
+  carNames.forEach(name => {
+    positions[name] = 0;
+  });
+  
+  // 각 라운드 시뮬레이션
+  for (let round = 0; round < roundCount; round++) {
+    carNames.forEach(name => {
+      const randomNum = Math.floor(Math.random() * 10);
+      if (randomNum >= 4) {
+        positions[name] += 1;
+      }
+    });
+    raceHistory.push({ ...positions });
+  }
+  
+  // 우승자 찾기
+  const maxPosition = Math.max(...Object.values(positions));
+  const winners = carNames.filter(name => positions[name] === maxPosition);
+  
+  return { raceHistory, winners };
+};
 
 /**
  * 자동차 경주 게임 시작 요청
@@ -11,6 +42,16 @@ const API_BASE_URL = '/api';
  * @returns {Promise<Object>} 게임 결과 데이터
  */
 export const startRacing = async (carNames, roundCount) => {
+  // Mock 모드일 때
+  if (USE_MOCK) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(generateMockRaceData(carNames, roundCount));
+      }, 500); // 0.5초 지연으로 실제 API 호출처럼 보이게
+    });
+  }
+  
+  // 실제 API 호출
   try {
     const response = await fetch(`${API_BASE_URL}/racing/start`, {
       method: 'POST',
