@@ -6,9 +6,10 @@ import racingcar.domain.random.RandomItemGenerator;
 import racingcar.dto.CarNamesDto;
 import racingcar.dto.RaceResultDto;
 import racingcar.repository.SpringDataJpaCarRepository;
-import racingcar.repository.SpringDataJpaWinnerRepository;
+import racingcar.repository.SpringDataJpaClassicWinnerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import racingcar.repository.SpringDataJpaItemWinnerRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +18,14 @@ import java.util.List;
 public class RacingGameService {
 
     private final SpringDataJpaCarRepository springDataJpaCarRepository;
-    private final SpringDataJpaWinnerRepository springDataJpaWinnerRepository;
+    private final SpringDataJpaClassicWinnerRepository springDataJpaClassicWinnerRepository;
+    private final SpringDataJpaItemWinnerRepository springDataJpaItemWinnerRepository;
 
     @Autowired
-    public RacingGameService(SpringDataJpaCarRepository springDataJpaCarRepository, SpringDataJpaWinnerRepository springDataJpaWinnerRepository) {
+    public RacingGameService(SpringDataJpaCarRepository springDataJpaCarRepository, SpringDataJpaClassicWinnerRepository springDataJpaClassicWinnerRepository, SpringDataJpaItemWinnerRepository springDataJpaItemWinnerRepository) {
         this.springDataJpaCarRepository = springDataJpaCarRepository;
-        this.springDataJpaWinnerRepository = springDataJpaWinnerRepository;
+        this.springDataJpaClassicWinnerRepository = springDataJpaClassicWinnerRepository;
+        this.springDataJpaItemWinnerRepository = springDataJpaItemWinnerRepository;
     }
 
     public void saveCars(Cars cars) {
@@ -30,9 +33,12 @@ public class RacingGameService {
         springDataJpaCarRepository.saveAll(cars.getCars());
     }
 
-    public void saveWinners(List<String> winners) {
-        Winners pastWinners = new Winners(winners);
-        springDataJpaWinnerRepository.save(pastWinners);
+    public void saveClassicWinners(List<String> winners) {
+        springDataJpaClassicWinnerRepository.save(new ClassicWinners(winners));
+    }
+
+    public void saveItemWinners(List<String> winners) {
+        springDataJpaItemWinnerRepository.save(new ItemWinners(winners));
     }
 
     public RaceResultDto playClassicRace(AttemptsCount attemptsCount) {

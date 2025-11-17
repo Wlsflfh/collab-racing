@@ -7,7 +7,6 @@ import racingcar.domain.AttemptsCount;
 import racingcar.domain.Cars;
 import racingcar.domain.GoalDistance;
 import racingcar.dto.RaceResultDto;
-import racingcar.dto.ItemRaceResultDto;
 import racingcar.dto.RacingRequest;
 import racingcar.mapper.RaceResultMapper;
 import racingcar.service.RacingGameService;
@@ -40,7 +39,7 @@ public class RacingGameApiController {
             AttemptsCount attemptsCount = new AttemptsCount(request.getRoundCount());
             RaceResultDto raceResultDto = racingGameService.playClassicRace(attemptsCount);
 
-            racingGameService.saveWinners(raceResultDto.getWinners());
+            racingGameService.saveClassicWinners(raceResultDto.getWinners());
 
             List<Map<String, Integer>> raceHistory = raceResultMapper.toRaceHistory(raceResultDto.getRaceProgress());
             List<Map<String, Integer>> randomNumbers = raceResultMapper.toRaceHistory(raceResultDto.getRaceProgress());
@@ -68,14 +67,14 @@ public class RacingGameApiController {
             GoalDistance goalDistance = new GoalDistance(request.getRoundCount());
             RaceResultDto itemRaceResultDto = racingGameService.playItemRace(goalDistance);
 
-            racingGameService.saveWinners(itemRaceResultDto.getWinners());
+            racingGameService.saveItemWinners(itemRaceResultDto.getWinners());
 
             List<Map<String, Integer>> raceHistory = raceResultMapper.toRaceHistory(itemRaceResultDto.getRaceProgress());
-            List<Map<String, Integer>> randomNumbers = raceResultMapper.toRaceHistory(itemRaceResultDto.getRaceProgress());
+            List<Map<String, Integer>> itemNumbers = raceResultMapper.toRaceHistory(itemRaceResultDto.getRaceProgress());
 
             Map<String, Object> response = new HashMap<>();
             response.put("raceHistory", raceHistory);
-            response.put("randomNumbers", randomNumbers);
+            response.put("randomNumbers", itemNumbers);
             response.put("winners", itemRaceResultDto.getWinners());
 
             return ResponseEntity.ok(response);
