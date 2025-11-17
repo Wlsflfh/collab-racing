@@ -104,7 +104,6 @@ function App() {
           {itemMode.gameState === 'input' && (
             <ItemModeInputForm
               onStartGame={itemMode.startGame}
-              onShowHistory={itemMode.showHistory}
               onBack={handleBackToModeSelection}
               error={itemMode.error}
             />
@@ -130,14 +129,6 @@ function App() {
               targetDistance={itemMode.targetDistance}
               totalRounds={itemMode.totalRounds}
               onRestart={handleResetGame}
-              onShowHistory={itemMode.showHistory}
-            />
-          )}
-
-          {/* 아이템 모드 - 역대 우승자 */}
-          {itemMode.gameState === 'history' && (
-            <WinnersHistoryScreen
-              onBack={itemMode.backToInput}
             />
           )}
         </>
