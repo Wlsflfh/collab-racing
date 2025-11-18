@@ -34,10 +34,7 @@ public class Car {
     }
 
     public void itemMove(int itemEffect) {
-        position += itemEffect;
-        if (position < 0) {
-            position = 0;
-        }
+        position = Math.max(position + itemEffect, INIT_POSITION);
     }
 
     private boolean isMoving(int randomNumber) {

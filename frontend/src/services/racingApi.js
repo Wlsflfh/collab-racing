@@ -17,7 +17,7 @@ const convertBackendResponse = (backendData, carNames) => {
     carNames.forEach(name => initial[name] = 0);
     return [initial];
   }
-  
+
   return backendData.map(roundData => {
     const positions = {};
     carNames.forEach(name => {
@@ -25,7 +25,7 @@ const convertBackendResponse = (backendData, carNames) => {
     });
     return positions;
   });
-}; 
+};
 /**
  * Mock 데이터 생성 (테스트용)
  */
@@ -33,33 +33,33 @@ const generateMockRaceData = (carNames, roundCount) => {
   const raceHistory = [];
   const randomNumbers = []; // 각 라운드의 랜덤 숫자 저장
   const positions = {};
-  
+
   // 초기 위치 설정
   carNames.forEach(name => {
     positions[name] = 0;
   });
-  
+
   // 각 라운드 시뮬레이션
   for (let round = 0; round < roundCount; round++) {
     const roundRandoms = {};
-    
+
     carNames.forEach(name => {
       const randomNum = Math.floor(Math.random() * 10);
       roundRandoms[name] = randomNum; // 랜덤 숫자 저장
-      
+
       if (randomNum >= 4) {
         positions[name] += 1;
       }
     });
-    
+
     raceHistory.push({ ...positions });
     randomNumbers.push(roundRandoms);
   }
-  
+
   // 우승자 찾기
   const maxPosition = Math.max(...Object.values(positions));
   const winners = carNames.filter(name => positions[name] === maxPosition);
-  
+
   return { raceHistory, randomNumbers, winners };
 };
 
@@ -78,7 +78,7 @@ export const startRacing = async (carNames, roundCount) => {
       }, 500); // 0.5초 지연으로 실제 API 호출처럼 보이게
     });
   }
-  
+
   // 실제 API 호출
   try {
     const response = await fetch(`${API_BASE_URL}/classic`, {
@@ -98,14 +98,14 @@ export const startRacing = async (carNames, roundCount) => {
     }
 
     const data = await response.json();
-    
+
     // 백엔드 응답 형식:
     // {
     //   raceHistory: [[{"pobi": 0}, {"crong": 0}], [{"pobi": 1}, {"crong": 0}], ...],
     //   randomNumbers: [[{"pobi": 5}, {"crong": 3}], ...],
     //   winners: ['pobi']
     // }
-    
+
     // 프론트엔드 형식으로 변환
     return {
       raceHistory: convertBackendResponse(data.raceHistory, carNames),
@@ -126,7 +126,7 @@ export const startRacing = async (carNames, roundCount) => {
 export const getRacingStatus = async (gameId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/racing/${gameId}`);
-    
+
     if (!response.ok) {
       throw new Error('게임 상태 조회에 실패했습니다.');
     }
@@ -139,22 +139,39 @@ export const getRacingStatus = async (gameId) => {
 };
 
 /**
- * 역대 우승자 목록 조회
+ * 클래식 모드 역대 우승자 목록 조회
  * @returns {Promise<Array<Array<string>>>} 역대 우승자 목록 (예: [["pobi", "woni"], ["jun"]])
  */
-export const getWinnersHistory = async () => {
+export const getClassicWinnersHistory = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/classic/winners`);
-    
+
     if (!response.ok) {
-      throw new Error('역대 우승자 조회에 실패했습니다.');
+      throw new Error('클랫식 모드 역대 우승자 조회에 실패했습니다.');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Winners History API Error:', error);
+    console.error('Classic Mode Winners History API Error:', error);
     throw error;
   }
 };
 
+/**
+ * 아이템 모드 역대 우승자 목록 조회
+ * @returns {Promise<Array<Array<string>>>} 역대 우승자 목록 (예: [["pobi", "woni"], ["jun"]])
+ */
+export const getItemWinnersHistory = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/item/winners`);
 
+    if (!response.ok) {
+      throw new Error('아이템 모드 역대 우승자 조회에 실패했습니다.');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Item Mode Winners History API Error:', error);
+    throw error;
+  }
+};
